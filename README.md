@@ -42,7 +42,6 @@ This repository contains code and resources for detecting cars using YOLOv8 and 
 ## How to Use
 
 ### 1. Training the YOLO Model
-To train the YOLO model, follow these steps:
    - Upload the `colab_file.txt` to [Google Colab](https://colab.research.google.com/).
    - Make sure to update the file paths for your dataset [Kaggle](https://kaggle.com/), as they are currently set to specific Google Drive locations.
    - Run the code to start training the model for detecting cars. The model will be saved after training is complete.
