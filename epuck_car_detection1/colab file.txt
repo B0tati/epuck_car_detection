@@ -1,0 +1,73 @@
+# Install the Ultralytics YOLO library (used for object detection)
+!pip install ultralytics
+
+# Import Google Drive to access files stored there
+from google.colab import drive
+
+# Mount Google Drive so that we can access files
+drive.mount('/content/drive')
+
+# List the files inside the "car detection" folder in Google Drive
+!ls "/content/drive/MyDrive/car detection"
+
+# Define a YAML configuration file for YOLO dataset
+yaml_content = """
+path: /content/drive/MyDrive/car detection  # Base path to dataset
+train: train/images  # Folder containing training images
+val: valid/images  # Folder containing validation images
+test: test/images  # Folder containing test images
+nc: 1  # Number of classes (only detecting 'car' in this case)
+names: ['car']  # Class name
+"""
+
+# Create and save the YAML file for YOLO dataset configuration
+with open('/content/car_dataset.yaml', 'w') as f:
+    f.write(yaml_content)
+
+# Import the YOLO module from Ultralytics
+from ultralytics import YOLO
+
+# Load the pre-trained YOLOv8 nano model (smallest version of YOLOv8)
+model = YOLO('yolov8n.pt')
+
+# Train the YOLO model using the dataset defined in the YAML file
+# - Runs for 50 epochs
+# - Uses image size of 640x640
+model.train(data='/content/car_dataset.yaml', epochs=50, imgsz=640)
+
+# Import shutil for file operations (copying files)
+import shutil
+
+# Path to the trained model (best version after training)
+source = '/content/runs/detect/train/weights/best.pt'
+
+# Path where we want to save the trained model in Google Drive
+destination = '/content/drive/MyDrive/car_detection_best.pt'
+
+# Copy the trained YOLO model to Google Drive
+shutil.copy(source, destination)
+
+# Import Colab's file upload module
+from google.colab import files
+
+# Upload an image manually from your local system to Colab
+uploaded = files.upload()
+
+# Import os module to work with file system
+import os
+
+# List all files in the current working directory
+os.listdir('/content')
+
+# Import Image display function
+from IPython.display import Image
+
+# Display an uploaded image (Make sure to replace the filename if different)
+Image(filename='/content/image_name.jpg')
+
+# Run YOLO detection on the uploaded image and save the results
+results = model.predict(source='/content/image_name.jpg', save=True)
+
+# Extract the first result (detection details for the first image)
+result = results[0]
+result.show()
